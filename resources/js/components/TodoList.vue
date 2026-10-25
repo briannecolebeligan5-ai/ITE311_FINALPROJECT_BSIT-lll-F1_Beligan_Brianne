@@ -58,6 +58,16 @@ const visibleTasks = computed(() => {
     return list;
 });
 
+const sortBy = ref('Newest');
+const priorityOrder = { High: 0, Medium: 1, Low: 2 };
+const sortedTasks = computed(() => {
+    const list = [...visibleTasks.value];
+    if (sortBy.value === 'Priority') {
+        list.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+    }
+    return list;
+});
+
 const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long', month: 'long', day: 'numeric',
 });
@@ -116,11 +126,15 @@ watch(progress, (now) => {
                     :class="{ active: filter === f }"
                     @click="filter = f"
                 >{{ f }}</button>
+                <select v-model="sortBy" class="sort">
+                    <option>Newest</option>
+                    <option>Priority</option>
+                </select>
             </div>
 
             <TransitionGroup v-if="visibleTasks.length > 0" name="list" tag="ul">
                 <TodoItem
-                    v-for="task in visibleTasks"
+                    v-for="task in sortedTasks"
                     :key="task.id"
                     :task="task"
                     @toggle="toggleTask"
@@ -205,6 +219,9 @@ footer { margin-top: 14px; text-align: right; }
 .clear { background: transparent; border: 1px solid #cbd5e1; color: #64748b;
          padding: 6px 14px; border-radius: 10px; cursor: pointer; font-size: 13px; }
 .clear:hover { background: #fee2e2; border-color: #fca5a5; color: #b91c1c; }
+.sort { margin-left: auto; padding: 6px 10px; border: 2px solid #e2e8f0;
+        border-radius: 10px; font-size: 13px; background: #fff; cursor: pointer; }
+.sort:focus { border-color: #6366f1; outline: none; }
 
 /* List animations */
 .list-enter-active, .list-leave-active { transition: all .3s ease; }
