@@ -206,6 +206,9 @@ footer { margin-top: 14px; text-align: right; }
 .clear { background: transparent; border: 1px solid #cbd5e1; color: #64748b;
          padding: 6px 14px; border-radius: 10px; cursor: pointer; font-size: 13px; }
 .clear:hover { background: #fee2e2; border-color: #fca5a5; color: #b91c1c; }
+.sort { margin-left: auto; padding: 6px 10px; border: 2px solid #e2e8f0;
+        border-radius: 10px; font-size: 13px; background: #fff; cursor: pointer; }
+.sort:focus { border-color: #6366f1; outline: none; }
 
 /* List animations */
 .list-enter-active, .list-leave-active { transition: all .3s ease; }
