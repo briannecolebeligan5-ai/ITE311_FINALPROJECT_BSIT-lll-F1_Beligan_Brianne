@@ -9,7 +9,9 @@ const saved = localStorage.getItem('tasks');
 const tasks = ref(saved ? JSON.parse(saved) : []);
 const error = ref('');
 const filter = ref('All');
-
+watch(tasks, (val) => {
+    localStorage.setItem('tasks', JSON.stringify(val));
+}, { deep: true });
 
 function addTask() {
     if (title.value.trim() === '') {
