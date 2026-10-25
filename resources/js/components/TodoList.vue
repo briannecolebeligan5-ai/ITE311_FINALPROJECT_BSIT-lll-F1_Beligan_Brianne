@@ -5,7 +5,8 @@ import TodoItem from './TodoItem.vue';
 
 const title = ref('');
 const priority = ref('Medium');
-const tasks = ref([]);
+const saved = localStorage.getItem('tasks');
+const tasks = ref(saved ? JSON.parse(saved) : []);
 const error = ref('');
 const filter = ref('All');
 
