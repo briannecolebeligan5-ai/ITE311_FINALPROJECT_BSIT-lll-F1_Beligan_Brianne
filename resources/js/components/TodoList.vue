@@ -50,6 +50,16 @@ const visibleTasks = computed(() => {
     return tasks.value;
 });
 
+const sortBy = ref('Newest');
+const priorityOrder = { High: 0, Medium: 1, Low: 2 };
+const sortedTasks = computed(() => {
+    const list = [...visibleTasks.value];
+    if (sortBy.value === 'Priority') {
+        list.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+    }
+    return list;
+});
+
 const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long', month: 'long', day: 'numeric',
 });
@@ -72,19 +82,16 @@ watch(progress, (now) => {
                     <p class="date">{{ today }}</p>
                 </div>
                 <div class="count">
-                     
                     <strong>{{ pendingCount }}</strong>
                     <span>pending</span>
                 </div>
             </header>
 
-            
             <div class="progress">
                 <div class="bar"><div class="fill" :style="{ width: progress + '%' }"></div></div>
                 <small>{{ doneCount }} of {{ tasks.length }} done ({{ progress }}%)</small>
             </div>
 
-            
             <div class="form">
                 <input
                     v-model="title"
@@ -100,10 +107,8 @@ watch(progress, (now) => {
                 <button class="add" @click="addTask">Add</button>
             </div>
 
-           
             <p v-show="error" class="error">{{ error }}</p>
 
-            
             <div class="filters">
                 <button
                     v-for="f in ['All', 'Pending', 'Done']"
@@ -111,12 +116,15 @@ watch(progress, (now) => {
                     :class="{ active: filter === f }"
                     @click="filter = f"
                 >{{ f }}</button>
+                <select v-model="sortBy" class="sort">
+                    <option>Newest</option>
+                    <option>Priority</option>
+                </select>
             </div>
 
-           
             <TransitionGroup v-if="visibleTasks.length > 0" name="list" tag="ul">
                 <TodoItem
-                    v-for="task in visibleTasks"
+                    v-for="task in sortedTasks"
                     :key="task.id"
                     :task="task"
                     @toggle="toggleTask"
