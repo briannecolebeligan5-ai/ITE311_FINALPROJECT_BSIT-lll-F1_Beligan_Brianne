@@ -7,7 +7,7 @@ const title = ref('');
 const priority = ref('Medium');
 const tasks = ref([]);
 const error = ref('');
-const filter = ref('All');
+const search = ref('');
 
 
 function addTask() {
@@ -45,9 +45,12 @@ const progress = computed(() =>
     tasks.value.length === 0 ? 0 : Math.round((doneCount.value / tasks.value.length) * 100)
 );
 const visibleTasks = computed(() => {
-    if (filter.value === 'Done') return tasks.value.filter(t => t.done);
-    if (filter.value === 'Pending') return tasks.value.filter(t => !t.done);
-    return tasks.value;
+    let list = tasks.value;
+    if (filter.value === 'Done') list = list.filter(t => t.done);
+    if (filter.value === 'Pending') list = list.filter(t => !t.done);
+    const q = search.value.trim().toLowerCase();
+    if (q) list = list.filter(t => t.title.toLowerCase().includes(q));
+    return list;
 });
 
 const today = new Date().toLocaleDateString('en-US', {
