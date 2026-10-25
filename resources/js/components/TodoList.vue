@@ -12,6 +12,8 @@ const filter = ref('All');
 watch(tasks, (val) => {
     localStorage.setItem('tasks', JSON.stringify(val));
 }, { deep: true });
+const search = ref('');
+
 
 function addTask() {
     if (title.value.trim() === '') {
@@ -48,9 +50,12 @@ const progress = computed(() =>
     tasks.value.length === 0 ? 0 : Math.round((doneCount.value / tasks.value.length) * 100)
 );
 const visibleTasks = computed(() => {
-    if (filter.value === 'Done') return tasks.value.filter(t => t.done);
-    if (filter.value === 'Pending') return tasks.value.filter(t => !t.done);
-    return tasks.value;
+    let list = tasks.value;
+    if (filter.value === 'Done') list = list.filter(t => t.done);
+    if (filter.value === 'Pending') list = list.filter(t => !t.done);
+    const q = search.value.trim().toLowerCase();
+    if (q) list = list.filter(t => t.title.toLowerCase().includes(q));
+    return list;
 });
 
 const today = new Date().toLocaleDateString('en-US', {
@@ -75,19 +80,16 @@ watch(progress, (now) => {
                     <p class="date">{{ today }}</p>
                 </div>
                 <div class="count">
-                     
                     <strong>{{ pendingCount }}</strong>
                     <span>pending</span>
                 </div>
             </header>
 
-            
             <div class="progress">
                 <div class="bar"><div class="fill" :style="{ width: progress + '%' }"></div></div>
                 <small>{{ doneCount }} of {{ tasks.length }} done ({{ progress }}%)</small>
             </div>
 
-            
             <div class="form">
                 <input
                     v-model="title"
@@ -103,10 +105,10 @@ watch(progress, (now) => {
                 <button class="add" @click="addTask">Add</button>
             </div>
 
-           
             <p v-show="error" class="error">{{ error }}</p>
 
-            
+            <input v-model="search" class="search" placeholder="Search tasks..." />
+
             <div class="filters">
                 <button
                     v-for="f in ['All', 'Pending', 'Done']"
@@ -116,7 +118,6 @@ watch(progress, (now) => {
                 >{{ f }}</button>
             </div>
 
-           
             <TransitionGroup v-if="visibleTasks.length > 0" name="list" tag="ul">
                 <TodoItem
                     v-for="task in visibleTasks"
@@ -184,6 +185,9 @@ h1 { margin: 0; font-size: 26px; color: #1e293b; }
 .error { color: #dc2626; font-size: 14px; margin: 8px 2px 0; }
 .success { color: #15803d; background: #dcfce7; padding: 10px 14px; border-radius: 10px;
            text-align: center; font-weight: 600; margin-top: 12px; }
+.search { width: 100%; box-sizing: border-box; margin-top: 18px; padding: 10px 14px;
+          border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; outline: none; }
+.search:focus { border-color: #6366f1; }
 
 .filters { display: flex; gap: 8px; margin: 18px 0 14px; }
 .filters button { border: 0; background: #f1f5f9; color: #475569; padding: 6px 16px;
